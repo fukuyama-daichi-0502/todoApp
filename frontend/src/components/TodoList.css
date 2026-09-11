@@ -1,0 +1,72 @@
+.taskTable {
+    border-collapse: collapse;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.taskTable th,
+.taskTable td {
+    border: 2px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+.tableHead{
+    color: black;
+    background-color:rgb(152, 255, 250);   
+}
+
+.button {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+
+.status {
+    border-radius: 999px;
+    padding: 6px 12px;
+
+    cursor: pointer;
+
+    text-align: center;
+}
+
+.status option {
+    background-color: white;
+    color: black;
+    font-weight: normal;
+}
+
+.status-in_progress {
+    background-color: #00FFFF;
+    font-weight: 900;
+}
+
+.status-on_hold {
+    background-color: #808080;
+}
+
+.status-done {
+    background-color: #888;
+}
+
+.status-cancelled {
+    background-color: yellow;
+}
+
+.task-title-done {
+    text-decoration: line-through;
+}
+
+.task-title-cancelled {
+    text-decoration: line-through;
+    transform: skewX(-15deg);
+}
+
+.task-row-done {
+    color: #FFFFFF;
+    background-color: #888;
+}
