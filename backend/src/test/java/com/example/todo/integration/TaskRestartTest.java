@@ -4,19 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.todo.TodoApplication;
 import com.example.todo.entity.Task;
+import com.example.todo.entity.TaskPriority;
 import com.example.todo.entity.TaskStatus;
 import com.example.todo.repository.IFTaskRepository;
 
 public class TaskRestartTest {
-    
+
     //アプリケーションを再起動しても保存されているタスクが失われないこと
     @Test 
+    @Transactional
     void applicationRestartTest(){
         //準備　1回目の起動、テストデータ1件を作成
         Long taskId = null;
@@ -32,9 +36,12 @@ public class TaskRestartTest {
             IFTaskRepository repository1 = context1.getBean(IFTaskRepository.class);
 
             //テスト用データを作成
+            int sortOrder = repository1.findTopByOrderBySortOrderDesc().map(Task::getSortOrder).orElse(0) + 1;
             Task task = new Task();
             task.setTitle(testTitle);
             task.setStatus(TaskStatus.TODO);
+            task.setPriority(TaskPriority.MEDIUM);
+            task.setSortOrder(sortOrder);
             Task savedTask = repository1.saveAndFlush(task);
 
             taskId = savedTask.getId();

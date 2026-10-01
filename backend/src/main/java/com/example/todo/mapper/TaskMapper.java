@@ -9,15 +9,27 @@ public class TaskMapper {
 
     //entityからレスポンス用のDTOに変換
     public static TaskResponse toTaskResponse(Task task) {
-        return new TaskResponse(
-            task.getId(),
-            task.getTitle(),
-            task.getStatus(),
-            task.getStatus().getLabel(),
-            task.getCreatedAt(),
-            task.getUpdatedAt(),
-            task.getCompletedAt()
-        );
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTitle(task.getTitle());
+        response.setDescription(task.getDescription());
+        response.setStatus(task.getStatus());
+        response.setStatusLabel(task.getStatus().getLabel());
+        response.setDueDate(task.getDueDate());
+        response.setPriority(task.getPriority());
+        response.setPriorityLabel(task.getPriority().getLabel());
+        response.setSortOrder(task.getSortOrder());
+        response.setCreatedAt(task.getCreatedAt());
+        response.setUpdatedAt(task.getUpdatedAt());
+        response.setCompletedAt(task.getCompletedAt());
+        
+        if(task.getCategory() != null){
+            response.setCategoryId(task.getCategory().getId());
+            response.setCategoryName(task.getCategory().getName());
+            response.setCategoryColor(task.getCategory().getColor());
+        }
+
+        return response;
     
     }
 
@@ -26,6 +38,8 @@ public class TaskMapper {
         Task task = new Task();
 
         task.setTitle(request.getTitle());
+        task.setDueDate(request.getDueDate());
+        task.setPriority(request.getPriority());
 
         return task;
     }
@@ -33,7 +47,10 @@ public class TaskMapper {
     //updateリクエストDTOをentityに変換
     public static void updateEntity(TaskUpdateRequest request, Task task){
         task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
         task.setStatus(request.getStatus());
+        task.setDueDate(request.getDueDate());
+        task.setPriority(request.getPriority());
     }
 
 }

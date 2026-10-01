@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.todo.dto.TaskCreateRequest;
+import com.example.todo.dto.TaskReorderRequest;
 import com.example.todo.dto.TaskResponse;
 import com.example.todo.dto.TaskStatusUpdateRequest;
 import com.example.todo.dto.TaskUpdateRequest;
+import com.example.todo.dto.TaskDescriptionUpdateRequest;
 import com.example.todo.service.TaskService;
 
 import jakarta.validation.Valid;
@@ -77,5 +79,17 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
     
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorderTask(@Valid @RequestBody TaskReorderRequest request){
+        taskService.reorderTask(request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/description")
+    public ResponseEntity<TaskResponse> updateTaskDescription(@PathVariable Long id, @Valid @RequestBody TaskDescriptionUpdateRequest request){
+        TaskResponse response = taskService.updateTaskDescription(id, request);
+
+        return ResponseEntity.ok(response);
+    }
 
 }

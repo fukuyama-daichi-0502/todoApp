@@ -1,0 +1,40 @@
+.formTable {
+    border-collapse: collapse;
+    margin: 3px auto;
+    width: 50%;
+    margin-bottom: 16px;
+}
+
+.formTable th,
+.formTable td {
+    border: 1px solid #999;
+    padding: 8px 12px;
+}
+
+.formTable th {
+    text-align: left;
+    white-space: nowrap;
+}
+
+.formTable input,
+.formTable select {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.formButton {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.formButton button {
+    font-size: 16px;
+}
+
+.task-description-input{
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 120px;
+    resize: none;
+}

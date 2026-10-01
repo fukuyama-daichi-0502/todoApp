@@ -8,8 +8,17 @@ function TaskCreatePage() {
 
     const {
         title,
+        description,
+        dueDate,
+        priority,
+        categoryId,
+        categories,
         errorMessage,
         handleTitleChange,
+        handleDescription,
+        handleDueDateChange,
+        handlePriorityChange,
+        handleCategoryChange,
         handleCreateTask
     } = useTaskCreatePresenter();
 
@@ -28,8 +37,17 @@ function TaskCreatePage() {
             <TaskForm
                 mode="create"
                 title={title}
+                description={description}
+                dueDate={dueDate}
+                priority={priority}
+                categoryId={categoryId}
+                categories={categories}
                 errorMessage={errorMessage}
                 onTitleChange={handleTitleChange}
+                onDescriptionChange={handleDescription}
+                onDueDateChange={handleDueDateChange}
+                onPriorityChange={handlePriorityChange}
+                onCategoryChange={handleCategoryChange}
                 onSubmit={handleSubmit}
             />
 

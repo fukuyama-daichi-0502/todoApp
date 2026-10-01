@@ -5,7 +5,28 @@ import {Link} from "react-router-dom";
 import "./TodoPage.css";
 
 function TodoPage() {
-    const { tasks, errorMessage, isLoading, handleDeleteTask, handleStatusChange } = useTaskListPresenter();
+    const {
+        tasks,
+        filteredTasks,
+        categoryOptions,
+        today,
+        titleSearch,
+        statusFilter,
+        dueDateFilter,
+        priorityFilter,
+        categoryFilter,
+        isReorderDisabled,
+        errorMessage,
+        isLoading,
+        handleDeleteTask,
+        handleStatusChange,
+        handleTitleSearchChange,
+        handleStatusFilterChange,
+        handleDueDateFilterChange,
+        handlePriorityFilterChange,
+        handleCategoryFilterChange,
+        handleTaskReorder
+    } = useTaskListPresenter();
 
     let taskListContent;
 
@@ -24,7 +45,27 @@ function TodoPage() {
     }else if(errorMessage){
         taskListContent = <p>{errorMessage}</p>; 
     }else{
-        taskListContent = <TodoList tasks = {tasks} onDelete = {handleDelete} onStatusChange = {handleStatusChange}/>;
+        taskListContent = 
+            <TodoList
+                tasks = {tasks}
+                filteredTasks = {filteredTasks}
+                today = {today}
+                titleSearch={titleSearch}
+                statusFilter={statusFilter}
+                dueDateFilter={dueDateFilter}
+                priorityFilter={priorityFilter}
+                categoryFilter={categoryFilter}
+                categoryOptions={categoryOptions}
+                isReorderDisabled={isReorderDisabled}
+                handleTitleSearchChange={handleTitleSearchChange}
+                handleStatusFilterChange={handleStatusFilterChange}
+                handleDueDateFilterChange={handleDueDateFilterChange}
+                handlePriorityFilterChange={handlePriorityFilterChange}
+                handleCategoryFilterChange={handleCategoryFilterChange}
+                onTaskReorder={handleTaskReorder}
+                onDelete = {handleDelete}
+                onStatusChange = {handleStatusChange}
+            />;
     }
 
     
@@ -36,6 +77,9 @@ function TodoPage() {
                 <h2>タスク一覧</h2>
                 <Link class = "button" to = "/tasks/new">
                     タスク追加
+                </Link>
+                <Link className = "button" to = "/categories">
+                    カテゴリ一覧
                 </Link>
             </div>
 

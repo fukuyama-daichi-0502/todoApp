@@ -8,24 +8,24 @@ export const getTasks = async () => {
     return response.data;
 };
 
-export const createTask = async (title) => {
-    const response = await axios.post(Base_URL, {title: title});
+export const createTask = async (request) => {
+    const response = await axios.post(Base_URL, request);
 
     return response.data;
 };
 
-export const updateTask = async(id, title, status) => {
+export const updateTask = async(id, request) => {
     
-    const response = await axios.put(
-        `${Base_URL}/${id}`,
-        {
-            title: title,
-            status: status
-        }
-    );
+    const response = await axios.put(`${Base_URL}/${id}`,request);
 
     return response.data;
 };
+
+export const updateTaskDescription = async(id, request) => {
+    const response = await axios.patch(`${Base_URL}/${id}/description`, request);
+
+    return response.data;
+}
 
 export const updateTaskStatus = async(id, status) => {
     const response = await axios.patch(
@@ -38,12 +38,16 @@ export const updateTaskStatus = async(id, status) => {
     return response.data;
 };
 
-export const getTask = async(id) =>{
+export const getTask = async(id) => {
     const response = await axios.get(`${Base_URL}/${id}`);
 
     return response.data;
 };
 
-export const deleteTask = async(id) =>{
+export const deleteTask = async(id) => {
     await axios.delete(`${Base_URL}/${id}`);
+};
+
+export const reorderTask = async (request) => {
+    await axios.patch(`${Base_URL}/reorder`, request);
 };

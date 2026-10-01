@@ -1,7 +1,33 @@
-.taskTable {
-    border-collapse: collapse;
-    width: 80%;
+.list-area {
+    /* width: 100%; */
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+
+    overflow-x: auto;
+}
+
+.search {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+
+.search input {
+    width: 220px;
+    box-sizing: border-box;
+}
+
+.taskTable {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse; 
+    margin: 0 auto;
+    table-layout: fixed;  
 }
 
 .taskTable th,
@@ -14,6 +40,14 @@
 .tableHead{
     color: black;
     background-color:rgb(152, 255, 250);   
+}
+
+.tableHead select{
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
 }
 
 .button {
@@ -69,4 +103,194 @@
 .task-row-done {
     color: #FFFFFF;
     background-color: #888;
+}
+
+/* 項目ごとの幅調整 */
+/* ドラッグ用列 */
+.taskTable th:nth-child(1),
+.taskTable td:nth-child(1) {
+    width: 26px;
+}
+/* ID */
+.taskTable th:nth-child(2),
+.taskTable td:nth-child(2) {
+    width: 20px;
+}
+/* タイトル */
+.taskTable th:nth-child(3),
+.taskTable td:nth-child(3) {
+    width: 220px;
+}
+/* ステータス */
+.taskTable th:nth-child(4),
+.taskTable td:nth-child(4) {
+    width: 80px;
+}
+/* 期限 */
+.taskTable th:nth-child(5),
+.taskTable td:nth-child(5) {
+    width: 170px;
+}
+/* 優先度 */
+.taskTable th:nth-child(6),
+.taskTable td:nth-child(6) {
+    width: 70px;
+}
+/* カテゴリ */
+.taskTable th:nth-child(7),
+.taskTable td:nth-child(7) {
+    width: 70px;
+}
+/* 登録日 */
+.taskTable th:nth-child(8),
+.taskTable td:nth-child(8) {
+    width: 170px;
+}
+/* 編集 */
+.taskTable th:nth-child(9),
+.taskTable td:nth-child(9) {
+    width: 80px;
+}
+/* 削除 */
+.taskTable th:nth-child(10),
+.taskTable td:nth-child(10) {
+    width: 70px;
+}
+
+/* 当日期限 */
+.task-row-due-today > td {
+    background-color: #ffe17c;
+}
+
+.due-date-area {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+}
+
+/* 期限切れ */
+.due-date-overdue {
+    color: #d00000;
+    font-weight: bold;
+}
+
+/* 期限切れラベル */
+.overdue-label {
+    display: block;
+    width: fit-content;
+
+    margin: 4px auto 0;
+    padding: 2px 8px;
+
+    color: #d00000;
+    font-size: 12px;
+    font-weight: bold;
+
+    border: 1px solid #000000;
+    border-radius: 9999px;
+
+    background-color: #fdff9d;
+}
+
+/* 優先度に応じたバッジ設定 */
+.priority-badge {
+    display: inline-block;
+
+    padding: 8px 16px;
+    
+    text-align: center;
+    vertical-align: middle;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* 優先度 高 */
+.priority-high {
+    color: #b00020;
+    background-color: #ffd6dc;
+    border: 3px solid #b00020;
+    border-radius: 999px;
+
+    padding: 0px 4px;
+}
+
+/* 優先度 中 */
+.priority-medium {
+    color: #7a5a00;
+    background-color: #fff0a8;
+    border: 3px solid #c59a00;
+    border-radius: 999px;
+
+    padding: 0px 4px;
+}
+
+/* 優先度 低 */
+.priority-low {
+    color: #176b32;
+    background-color: #d8f3df;
+    border: 3px solid #2f8f4e;
+    border-radius: 999px;
+
+    padding: 0px 4px;
+}
+
+.taskTable thead th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.taskTable thead select {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+/* フィルター選択時の強調表示 */
+.filter-select {
+    background-color: white;
+}
+
+.filter-select-active {
+    background-color: #eee5ff;
+    border: 2px solid #805ad5;
+    color: #51368f;
+    font-weight: bold;
+}
+
+.filter-select option {
+    background-color: white;
+    color: black;
+    font-weight: normal;
+}
+
+.task-category {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* 詳細 */
+.task-description-text {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.task-description-collapsed {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.task-description-expanded {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+
+.description-toggle-button {
+    flex-shrink: 0;
 }

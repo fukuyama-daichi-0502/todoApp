@@ -7,12 +7,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.todo.dto.ApiErrorResponse;
+import com.example.todo.exception.DuplicateResourceException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     //HTTPエラー
-    @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleTaskNotFound(TaskNotFoundException exception){
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceNotFound(ResourceNotFoundException exception){
         ApiErrorResponse response = new ApiErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
@@ -25,6 +26,14 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(HttpStatus.BAD_REQUEST.value(),message);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    //カテゴリ名重複エラー
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateResourceException (DuplicateResourceException exception){
+        ApiErrorResponse response = new ApiErrorResponse(HttpStatus.CONFLICT.value(), exception.getMessage());
+        
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
 }

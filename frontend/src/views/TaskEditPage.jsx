@@ -10,11 +10,20 @@ function TaskEditPage() {
 
     const {
         title,
+        description,
         status,
+        dueDate,
+        priority,
+        categoryId,
+        categories,
         errorMessage,
         isLoading,
         handleTitleChange,
+        handleDescription,
         handleStatusChange,
+        handleDueDateChange,
+        handlePriorityChange,
+        handleCategoryChange,
         handleUpdateTask
     } = useTaskEditPresenter(id);
 
@@ -42,10 +51,19 @@ function TaskEditPage() {
             <TaskForm
                 mode="edit"
                 title={title}
+                description={description}
                 status={status}
+                dueDate={dueDate}
+                priority={priority}
+                categoryId={categoryId}
+                categories={categories}
                 errorMessage={errorMessage}
                 onTitleChange={handleTitleChange}
+                onDescriptionChange={handleDescription}
                 onStatusChange={handleStatusChange}
+                onDueDateChange={handleDueDateChange}
+                onPriorityChange={handlePriorityChange}
+                onCategoryChange={handleCategoryChange}
                 onSubmit={handleSubmit}
                 onCancel={handleCancel}
             />

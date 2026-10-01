@@ -1,5 +1,6 @@
 package com.example.todo.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -7,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,10 +24,27 @@ public class Task {
 
     @Column(nullable = false,length = 100)
     private String title;
+
+    @Column(name = "description")
+    private String description;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskStatus status;
+
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskPriority priority;
+
+    @ManyToOne 
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @Column(name = "sort_order", nullable = false)
+    private Integer sortOrder;
     
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -52,8 +72,48 @@ public class Task {
         this.title = title;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public TaskStatus getStatus() {
         return status;
+    } 
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public TaskPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(TaskPriority priority) {
+        this.priority = priority;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
     public void setStatus(TaskStatus status) {
@@ -83,6 +143,5 @@ public class Task {
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
     }
-    
     
 }

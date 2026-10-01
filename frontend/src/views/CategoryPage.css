@@ -1,0 +1,14 @@
+.category-list-header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}
+
+.button{
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+}
