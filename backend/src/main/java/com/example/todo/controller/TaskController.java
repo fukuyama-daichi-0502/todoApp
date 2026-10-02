@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.todo.dto.TaskCreateRequest;
 import com.example.todo.dto.TaskReorderRequest;
 import com.example.todo.dto.TaskResponse;
+import com.example.todo.dto.TaskSearchCondition;
 import com.example.todo.dto.TaskStatusUpdateRequest;
 import com.example.todo.dto.TaskUpdateRequest;
 import com.example.todo.dto.TaskDescriptionUpdateRequest;
@@ -40,8 +42,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getTasks(){
-        return taskService.getTasks();
+    public List<TaskResponse> getTasks(@ModelAttribute TaskSearchCondition condition){
+        return taskService.searchTasks(condition);
     }
     
     @PostMapping

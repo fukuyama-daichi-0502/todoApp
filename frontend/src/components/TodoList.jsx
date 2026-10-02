@@ -159,14 +159,14 @@ function SortableTaskRow({
 
 function TodoList({
     tasks,
-    filteredTasks,
+    categories,
     today,
     titleSearch,
     statusFilter,
     dueDateFilter,
     priorityFilter,
     categoryFilter,
-    categoryOptions,
+    // categoryOptions,
     isReorderDisabled,
     handleTitleSearchChange,
     handleStatusFilterChange,
@@ -224,7 +224,72 @@ function TodoList({
         <div>
 
             {tasks.length === 0 ? (
-                <p>タスクはありません</p>
+                <>
+                    <div calassName = "list-area">
+                        <div className = "search">
+                            <input type = "text" value = {titleSearch} onChange = {handleTitleSearchChange} placeholder = "タイトル検索"/>
+                        </div>
+
+                            <table className = "taskTable">
+                                <thead className = "tableHead">
+                                    <tr>
+                                        <th>{/* ドラッグ列 */}</th>
+                                        <th>ID</th>
+                                        <th>タイトル</th>
+                                        <th>
+                                            <span>ステータス</span>
+
+                                            <select className = {statusFilter !== "" ? "filter-select-active filter-select" : "filter-select"} value = {statusFilter} onChange = {handleStatusFilterChange}>
+                                                <option value="">すべて</option>
+                                                <option value="TODO">未着手</option>
+                                                <option value="IN_PROGRESS">進行中</option>
+                                                <option value="ON_HOLD">保留</option>
+                                                <option value="DONE">完了</option>
+                                                <option value="CANCELLED">中止</option>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <span>期限</span>
+
+                                            <select className = {dueDateFilter !== "" ? "filter-select-active filter-select" : "filter-select"} value = {dueDateFilter} onChange = {handleDueDateFilterChange}>
+                                                <option value = "">すべて</option>
+                                                <option value = "TODAY">今日まで</option>
+                                                <option value = "OVERDUE">期限切れ</option>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <span>優先度</span>
+
+                                            <select className = {priorityFilter !== "" ? "filter-select-active filter-select" : "filter-select"} value = {priorityFilter} onChange = {handlePriorityFilterChange}>
+                                                <option value = "">すべて</option>
+                                                <option value="LOW">低</option>
+                                                <option value="MEDIUM">中</option>
+                                                <option value="HIGH">高</option>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <span>カテゴリ</span>
+
+                                            <select className = {categoryFilter !== "" ? "filter-select-active filter-select" : "filter-select"} value = {categoryFilter} onChange = {handleCategoryFilterChange}>
+                                                <option value = "">すべて</option>
+                                                <option value = "NONE">-</option>
+
+                                                {categories.map((category) => (
+                                                    <option key = {category.id} value = {category.id}>{category.name}</option>
+                                                ))}
+                                            </select>
+                                        </th>
+                                        <th>登録日</th>
+                                        <th>編集</th>
+                                        <th>削除</th>
+                                    </tr>
+
+                                </thead>
+                                
+                            </table>
+                    </div>
+                    <p>タスクはありません</p>
+            </>
             ): (
                 <div calassName = "list-area">
                     <div className = "search">
@@ -277,7 +342,7 @@ function TodoList({
                                             <option value = "">すべて</option>
                                             <option value = "NONE">-</option>
 
-                                            {categoryOptions.map((category) => (
+                                            {categories.map((category) => (
                                                 <option key = {category.id} value = {category.id}>{category.name}</option>
                                             ))}
                                         </select>
@@ -289,7 +354,7 @@ function TodoList({
 
                             </thead>
                             
-                                {filteredTasks.map((task, index) => (
+                                {tasks.map((task, index) => (
                                     <SortableTaskRow 
                                         key = {task.id}
                                         task = {task}

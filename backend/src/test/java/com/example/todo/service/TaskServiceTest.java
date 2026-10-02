@@ -2,8 +2,10 @@ package com.example.todo.service;
 					
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -12,15 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.todo.dto.DueDateFilter;
 import com.example.todo.dto.ReorderPosition;
 import com.example.todo.dto.TaskCreateRequest;
 import com.example.todo.dto.TaskDescriptionUpdateRequest;
 import com.example.todo.dto.TaskReorderRequest;
 import com.example.todo.dto.TaskResponse;
+import com.example.todo.dto.TaskSearchCondition;
 import com.example.todo.dto.TaskUpdateRequest;
+import com.example.todo.entity.Category;
 import com.example.todo.entity.Task;
 import com.example.todo.entity.TaskPriority;
 import com.example.todo.entity.TaskStatus;
+import com.example.todo.repository.IFCategoryRepository;
 import com.example.todo.repository.IFTaskRepository;
 
 import jakarta.persistence.EntityManager;
@@ -36,6 +42,9 @@ class TaskServiceTest {
     
     @Autowired
     private IFTaskRepository taskRepository;
+
+    @Autowired
+    private IFCategoryRepository categoryRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -278,6 +287,150 @@ class TaskServiceTest {
             task.setSortOrder(sortOrder);
 
             return taskRepository.saveAndFlush(task);
+    }
+
+    //フィルタリング・検索機能が正しく動作すること
+    @Test
+    void shouldSearchTasksByConditions(){
+        LocalDate today = LocalDate.now();
+
+        int sortOrder = taskRepository.findTopByOrderBySortOrderDesc().map(Task::getSortOrder).orElse(0) + 1;
+
+        //準備：テスト対象のタスクを作成
+        Category testCategoryA = new Category();
+        testCategoryA.setName("JUnitテストカテゴリA");
+        testCategoryA.setColor("#000000");
+        Category savedTestCategoryA = categoryRepository.saveAndFlush(testCategoryA);
+
+        Category testCategoryB = new Category();
+        testCategoryB.setName("JUnitテストカテゴリB");
+        testCategoryB.setColor("#fa4343");
+        //カテゴリBは比較時に使用しないためsavedTestCategoryBとして変数を作成しない
+        categoryRepository.saveAndFlush(testCategoryB);
+
+        Task targetTask = createTestTask("JUnit Search Java Target", sortOrder + 1);
+        targetTask.setStatus(TaskStatus.TODO);
+        targetTask.setPriority(TaskPriority.HIGH);
+        targetTask.setDueDate(today);
+        targetTask.setCategory(testCategoryA);
+
+        taskRepository.saveAndFlush(targetTask);
+
+        Task differentStatusTask = createTestTask("JUnit Search Java Different Status", sortOrder + 2);
+        differentStatusTask.setStatus(TaskStatus.IN_PROGRESS);
+        differentStatusTask.setPriority(TaskPriority.HIGH);
+        differentStatusTask.setDueDate(today);
+        differentStatusTask.setCategory(testCategoryA);
+
+        taskRepository.saveAndFlush(differentStatusTask);
+
+        Task overdueTask = createTestTask("JUnit Search Overdue", sortOrder + 3);
+         overdueTask.setStatus(TaskStatus.TODO);
+        overdueTask.setPriority(TaskPriority.LOW);
+        overdueTask.setDueDate(today.minusDays(1));
+        overdueTask.setCategory(testCategoryB);
+
+        taskRepository.saveAndFlush(overdueTask);
+
+        Task completedOverdueTask = createTestTask("JUnit Search Completed Overdue", sortOrder + 4);
+        completedOverdueTask.setStatus(TaskStatus.DONE);
+        completedOverdueTask.setPriority(TaskPriority.LOW);
+        completedOverdueTask.setDueDate(today.minusDays(1));
+        completedOverdueTask.setCategory(testCategoryB);
+
+        taskRepository.saveAndFlush(completedOverdueTask);
+
+        Task noCategoryTask = createTestTask("JUnit Search No Category", sortOrder + 5);
+        noCategoryTask.setStatus(TaskStatus.TODO);
+        noCategoryTask.setPriority(TaskPriority.MEDIUM);
+        noCategoryTask.setDueDate(today.plusDays(1));
+        noCategoryTask.setCategory(null);
+
+        taskRepository.saveAndFlush(noCategoryTask);
+
+        //確認：期待した結果になっているか
+        assertAll(
+            "Task search conditions",
+            //タイトル部分一致
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+
+                condition.setTitle("Java Target");
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
+            },
+            //ステータス
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+                condition.setStatus(TaskStatus.TODO);
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(differentStatusTask.getId())));
+            },
+            //TODAY
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+                condition.setDueDate(DueDateFilter.TODAY);
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
+            },
+            //OVERDUE
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+                condition.setDueDate(DueDateFilter.OVERDUE);
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(completedOverdueTask.getId())));
+            },
+            //優先度
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+                condition.setPriority(TaskPriority.HIGH);
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
+            },
+            //カテゴリID
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+                condition.setCategory(String.valueOf(savedTestCategoryA.getId()));
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
+            },
+            //カテゴリなし
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+                condition.setCategory("NONE");
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(noCategoryTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
+            },
+            //複数条件
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+                condition.setTitle("JUnit Search Java");
+                condition.setStatus(TaskStatus.TODO);
+                condition.setDueDate(DueDateFilter.TODAY);
+                condition.setPriority(TaskPriority.HIGH);
+                condition.setCategory(String.valueOf(savedTestCategoryA.getId()));
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(differentStatusTask.getId())));
+            }
+        );
+
     }
 
 }					

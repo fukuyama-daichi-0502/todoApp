@@ -5,6 +5,7 @@ import com.example.todo.dto.TaskCreateRequest;
 import com.example.todo.dto.TaskDescriptionUpdateRequest;
 import com.example.todo.dto.TaskReorderRequest;
 import com.example.todo.dto.TaskResponse;
+import com.example.todo.dto.TaskSearchCondition;
 import com.example.todo.dto.TaskStatusUpdateRequest;
 import com.example.todo.dto.TaskUpdateRequest;
 import com.example.todo.entity.Category;
@@ -15,14 +16,18 @@ import com.example.todo.exception.ResourceNotFoundException;
 import com.example.todo.mapper.TaskMapper;
 import com.example.todo.repository.IFCategoryRepository;
 import com.example.todo.repository.IFTaskRepository;
+import com.example.todo.search.TaskSearchFilters;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 
 @Service
@@ -36,19 +41,50 @@ public class TaskService {
         this.categoryRepository = categoryRepository;
     }
 
-    //タスク一覧取得
-    @Transactional(readOnly = true)
-    public List<TaskResponse> getTasks(){
-        List<Task> tasks = taskRepository.findAllByOrderBySortOrderAsc();
-        List<TaskResponse> responses = new ArrayList<>();
+    //タスク一覧取得　フィルタリング・検索機能
+    public List<TaskResponse> searchTasks(TaskSearchCondition condition){
+        Specification<Task> specification = 
+            (root, query, criteriaBuilder) ->
+                criteriaBuilder.conjunction();
 
-        for(Task task:tasks){
-            TaskResponse response = TaskMapper.toTaskResponse(task);
-            
-            responses.add(response);
+        if(condition.getTitle() !=null && !condition.getTitle().isBlank()){
+            specification = specification.and(
+                TaskSearchFilters.titleContains(condition.getTitle())    
+            );
         }
-    
-        return responses;
+
+        if(condition.getStatus() !=null){
+            specification = specification.and(TaskSearchFilters.hasStatus(condition.getStatus()));
+        }
+
+        if(condition.getDueDate() != null){
+            LocalDate today = LocalDate.now();
+
+            switch(condition.getDueDate()){
+                case TODAY -> 
+                    specification = specification.and(TaskSearchFilters.dueToday(today)); 
+                
+                case OVERDUE ->
+                    specification = specification.and(TaskSearchFilters.overdue(today)); 
+            }
+        }
+
+        if(condition.getPriority() != null){
+            specification = specification.and(TaskSearchFilters.hasPriority(condition.getPriority()));
+        }
+
+        if(condition.getCategory() != null && !condition.getCategory().isBlank()){
+            if("NONE".equalsIgnoreCase(condition.getCategory())){
+                specification = specification.and(TaskSearchFilters.hasNoCategory());
+            }else{
+                Long categoryId = Long.valueOf(condition.getCategory());
+                specification = specification.and(TaskSearchFilters.hasCategory(categoryId));
+            }
+        }
+
+        List<Task> tasks = taskRepository.findAll(specification, Sort.by(Sort.Direction.ASC,"sortOrder"));
+
+        return tasks.stream().map(TaskMapper::toTaskResponse).toList();
     }
 
     //タスク1件の取得
@@ -241,7 +277,5 @@ public class TaskService {
         }
 
     }
-        
-
 
 }

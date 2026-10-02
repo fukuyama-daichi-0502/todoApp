@@ -2,8 +2,31 @@ import axios from "axios";
 
 const Base_URL ="http://localhost:8080/api/tasks";
 
-export const getTasks = async () => {
-    const response = await axios.get(Base_URL);
+export const getTasks = async (searchConditions ={}) => {
+    const params = {};
+    
+    if(searchConditions.title?.trim()){
+        params.title = searchConditions.title.trim();
+    }
+
+    if(searchConditions.status){
+        params.status = searchConditions.status;
+    }
+
+    if(searchConditions.dueDate){
+        params.dueDate = searchConditions.dueDate;
+    }
+
+    if(searchConditions.priority){
+        params.priority = searchConditions.priority;
+    }
+
+    if(searchConditions.category){
+        params.category = searchConditions.category;
+    }
+    
+    const response = await axios.get(Base_URL, {params: params});
+
 
     return response.data;
 };

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { getTasks, deleteTask, updateTaskStatus, reorderTask } from "../models/taskApi";
+import { getCategories } from "../models/categoryApi";
 import { getApiErrorMessage } from "../errors/apiError";
 
 export const useTaskListPresenter = () => {
     const [tasks, setTasks] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(true);
 
@@ -17,7 +19,13 @@ export const useTaskListPresenter = () => {
     useEffect(() => {
         const fetchTasks = async () => {
             try{
-                const data = await getTasks();
+                const data = await getTasks({
+                    title: titleSearch,
+                    status: statusFilter,
+                    dueDate: dueDateFilter,
+                    priority: priorityFilter,
+                    category: categoryFilter
+                });
 
                 setTasks(data);
             
@@ -32,7 +40,36 @@ export const useTaskListPresenter = () => {
         };
 
         fetchTasks();
-    },[]);
+    },[
+        titleSearch,
+        statusFilter,
+        dueDateFilter,
+        priorityFilter,
+        categoryFilter,
+    ]);
+
+    //カテゴリ取得用
+    useEffect(() => {
+
+        const fetchCategories = async () => {
+
+            try {
+
+                const categoryData = await getCategories();
+
+                setCategories(categoryData);
+
+            } catch (error) {
+
+                const message = getApiErrorMessage(error, "カテゴリの取得に失敗しました");
+
+                setErrorMessage(message);
+            }
+        };
+
+        fetchCategories();
+
+    }, []);
 
     const handleDeleteTask = async (id) => {
          setErrorMessage("");
@@ -98,65 +135,6 @@ export const useTaskListPresenter = () => {
 
     const today = `${year}-${month}-${day}`;
 
-
-
-    const categoryOptions = Array.from(
-        new Map(
-            tasks
-                .filter(
-                    (task) =>
-                        task.categoryId != null
-                )
-                .map((task) => [
-                    task.categoryId,
-                    {
-                        id: task.categoryId,
-                        name: task.categoryName
-                    }
-                ])
-        ).values()
-    );
-
-    //画面表示するタスク
-    const filteredTasks = tasks.filter((task) => {
-        //タイトル検索
-        const searchKeyword = titleSearch.trim().toLowerCase();
-
-        if(searchKeyword !== "" && !task.title.toLowerCase().includes(searchKeyword)){
-            return false;
-        }
-
-
-        if(statusFilter !== "" && task.status !== statusFilter){
-            return false;
-        }
-
-        if(priorityFilter !== "" && task.priority !== priorityFilter){
-            return false;
-        }
-
-        //期限：当日
-        if(dueDateFilter === "TODAY" && task.dueDate !== today){
-            return false;
-        }
-
-        //期限：期限切れ
-        if(dueDateFilter === "OVERDUE"){
-            if(!task.dueDate || task.dueDate >= today || task.status === "DONE" || task.status === "CANCELLED"){
-                return false;
-            }
-        }
-
-        if(categoryFilter === "NONE"){
-            if(task.categoryId != null){
-                return false;
-            }
-        }else if(categoryFilter !== "" && String(task.categoryId) !== categoryFilter){
-            return false;
-        }
-        return true;
-    })
-
     //検索・フィルタリング中かの確認
     const isReorderDisabled =
         titleSearch.trim() !== ""
@@ -183,7 +161,7 @@ export const useTaskListPresenter = () => {
         }
 
         //移動先indexが不正な場合
-        if(newIndex < 0 || newIndex >= filteredTasks.length){
+        if(newIndex < 0 || newIndex >= tasks.length){
             return;
         }
 
@@ -221,8 +199,7 @@ export const useTaskListPresenter = () => {
 
     return{
         tasks,
-        filteredTasks,
-        categoryOptions,
+        categories,
 
         today,
         

@@ -7,8 +7,8 @@ import "./TodoPage.css";
 function TodoPage() {
     const {
         tasks,
-        filteredTasks,
-        categoryOptions,
+        categories,
+        // categoryOptions,
         today,
         titleSearch,
         statusFilter,
@@ -48,14 +48,13 @@ function TodoPage() {
         taskListContent = 
             <TodoList
                 tasks = {tasks}
-                filteredTasks = {filteredTasks}
                 today = {today}
                 titleSearch={titleSearch}
                 statusFilter={statusFilter}
                 dueDateFilter={dueDateFilter}
                 priorityFilter={priorityFilter}
                 categoryFilter={categoryFilter}
-                categoryOptions={categoryOptions}
+                categories={categories}
                 isReorderDisabled={isReorderDisabled}
                 handleTitleSearchChange={handleTitleSearchChange}
                 handleStatusFilterChange={handleStatusFilterChange}
