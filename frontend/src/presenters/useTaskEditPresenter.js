@@ -17,7 +17,7 @@ export const useTaskEditPresenter = (id) => {
     useEffect(() => {
         const fetchTask = async() =>{
             try{
-                const task = await getTask();
+                const task = await getTask(id);
 
                 setTitle(task.title);
                 setDescription(task.description ?? "");
