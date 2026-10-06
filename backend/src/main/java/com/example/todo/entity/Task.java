@@ -36,7 +36,7 @@ public class Task {
     private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "priority")
     private TaskPriority priority;
 
     @ManyToOne 

@@ -10,7 +10,6 @@ import com.example.todo.dto.TaskStatusUpdateRequest;
 import com.example.todo.dto.TaskUpdateRequest;
 import com.example.todo.entity.Category;
 import com.example.todo.entity.Task;
-import com.example.todo.entity.TaskPriority;
 import com.example.todo.entity.TaskStatus;
 import com.example.todo.exception.ResourceNotFoundException;
 import com.example.todo.mapper.TaskMapper;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -49,7 +47,7 @@ public class TaskService {
 
         if(condition.getTitle() !=null && !condition.getTitle().isBlank()){
             specification = specification.and(
-                TaskSearchFilters.titleContains(condition.getTitle())    
+                TaskSearchFilters.textContains(condition.getTitle())    
             );
         }
 
@@ -105,10 +103,6 @@ public class TaskService {
         Task task = TaskMapper.toEntity(request);
 
         task.setStatus(TaskStatus.TODO);
-        //優先度が設定されているかチェック
-        if (task.getPriority() == null) {
-            task.setPriority(TaskPriority.MEDIUM);
-        }
 
         if(request.getCategoryId() != null){
             Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("カテゴリが見つかりません"));

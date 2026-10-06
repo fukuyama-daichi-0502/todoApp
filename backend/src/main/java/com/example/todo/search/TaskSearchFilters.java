@@ -10,15 +10,27 @@ import com.example.todo.entity.TaskPriority;
 import com.example.todo.entity.TaskStatus;
 
 public final class TaskSearchFilters {
-    public static Specification<Task> titleContains(String title){
-        String keyword = title.trim().toLowerCase(Locale.ROOT);
+    public static Specification<Task> textContains(String text){
+        String keyword = text.trim().toLowerCase(Locale.ROOT);
+
+        String pattern = "%" + keyword + "%";
 
         return (root, query, criteriaBuilder) -> 
+            criteriaBuilder.or(
+                criteriaBuilder.like(
+                    criteriaBuilder.lower(
+                        root.<String>get("title")
+                ),
+                pattern
+            ),
             criteriaBuilder.like(
                 criteriaBuilder.lower(
-                    root.get("title")
+                    root.<String>get("description")
                 ),
-                "%" + keyword + "%");
+                pattern
+            )
+        );
+            
     }
 
     public static Specification<Task> hasStatus(TaskStatus status){
@@ -60,11 +72,14 @@ public final class TaskSearchFilters {
 
     public static Specification<Task> hasPriority(TaskPriority priority){
 
-        return (root, query, criteriaBuilder) -> 
-            criteriaBuilder.equal(
-                root.get("priority"),
-                priority
-            );
+        return (root, query, criteriaBuilder) -> {
+            if(priority == TaskPriority.MEDIUM){
+                return criteriaBuilder.or(criteriaBuilder.equal(root.get("priority"),TaskPriority.MEDIUM),criteriaBuilder.isNull(root.get("priority")));
+            }
+
+            return criteriaBuilder.equal(root.get("priority"),priority);
+        };
+            
     }
 
     public static Specification<Task> hasCategory(Long categoryId){

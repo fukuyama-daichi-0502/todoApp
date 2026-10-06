@@ -22,7 +22,6 @@ public class TaskUpdateRequest {
 
     private LocalDate dueDate;
 
-    @NotNull(message = "優先度は必須です")
     private TaskPriority priority;
     
     private Long categoryId;

@@ -16,7 +16,10 @@ export const useTaskListPresenter = () => {
     const [priorityFilter, setPriorityFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
 
+    
+
     useEffect(() => {
+        let ignore = false;
         const fetchTasks = async () => {
             try{
                 const data = await getTasks({
@@ -27,19 +30,29 @@ export const useTaskListPresenter = () => {
                     category: categoryFilter
                 });
 
-                setTasks(data);
-            
+                if(!ignore){
+                    setTasks(data);
+                }
+
             }catch(error){
-                const message = getApiErrorMessage(error, "タスク一覧の取得に失敗しました");
-            
-                setErrorMessage(message);
+                if(!ignore){
+                    const message = getApiErrorMessage(error, "タスク一覧の取得に失敗しました");
+                    setErrorMessage(message);
+                }
+                          
             }finally{
-                setIsLoading(false);
+                if(!ignore){
+                    setIsLoading(false);
+                }              
             }
-            
         };
 
         fetchTasks();
+
+        return () => {
+            ignore = true;
+        };
+        
     },[
         titleSearch,
         statusFilter,
@@ -88,13 +101,20 @@ export const useTaskListPresenter = () => {
     };
 
     const handleStatusChange = async(id, newStatus) => {
-        setErrorMessage("");
+
 
         try{
-            const updatedTask = await updateTaskStatus(id, newStatus);
-            setTasks((currentTasks) => currentTasks.map((task) => task.id === updatedTask.id?updatedTask: task));
-            
-            return true;
+            await updateTaskStatus(id, newStatus);
+            // setTasks((currentTasks) => currentTasks.map((task) => task.id === updatedTask.id?updatedTask: task));
+            const data = await getTasks({
+                title: titleSearch,
+                status: statusFilter,
+                dueDate: dueDateFilter,
+                priority: priorityFilter,
+                category: categoryFilter
+            });
+
+            setTasks(data);
         }catch(error){
             const message = getApiErrorMessage(error, "ステータスの更新に失敗しました");
             setErrorMessage(message);

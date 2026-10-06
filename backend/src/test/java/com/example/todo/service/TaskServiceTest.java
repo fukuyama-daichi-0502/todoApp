@@ -325,10 +325,11 @@ class TaskServiceTest {
         taskRepository.saveAndFlush(differentStatusTask);
 
         Task overdueTask = createTestTask("JUnit Search Overdue", sortOrder + 3);
-         overdueTask.setStatus(TaskStatus.TODO);
+        overdueTask.setStatus(TaskStatus.TODO);
         overdueTask.setPriority(TaskPriority.LOW);
         overdueTask.setDueDate(today.minusDays(1));
         overdueTask.setCategory(testCategoryB);
+        overdueTask.setDescription("JUnit Description keyword");
 
         taskRepository.saveAndFlush(overdueTask);
 
@@ -348,6 +349,15 @@ class TaskServiceTest {
 
         taskRepository.saveAndFlush(noCategoryTask);
 
+        Task noPriorityTask = createTestTask("JUnit No Priority", sortOrder + 6);
+        
+        noPriorityTask.setStatus(TaskStatus.TODO);
+        noPriorityTask.setPriority(null);
+        noPriorityTask.setDueDate(today);
+        noPriorityTask.setCategory(testCategoryA);
+        
+        taskRepository.saveAndFlush(noPriorityTask);
+
         //確認：期待した結果になっているか
         assertAll(
             "Task search conditions",
@@ -361,6 +371,17 @@ class TaskServiceTest {
 
                 assertTrue(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
                 assertFalse(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
+            },
+            //詳細に一致する場合
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+
+                condition.setTitle("Description Keyword");
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
             },
             //ステータス
             () -> {
@@ -396,6 +417,15 @@ class TaskServiceTest {
 
                 List<TaskResponse> result = taskService.searchTasks(condition);
                 assertTrue(result.stream().anyMatch(task -> task.getId().equals(targetTask.getId())));
+                assertFalse(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
+            },
+            //優先度なし
+            () -> {
+                TaskSearchCondition condition = new TaskSearchCondition();
+                condition.setPriority(TaskPriority.MEDIUM);
+
+                List<TaskResponse> result = taskService.searchTasks(condition);
+                assertTrue(result.stream().anyMatch(task -> task.getId().equals(noPriorityTask.getId())));
                 assertFalse(result.stream().anyMatch(task -> task.getId().equals(overdueTask.getId())));
             },
             //カテゴリID

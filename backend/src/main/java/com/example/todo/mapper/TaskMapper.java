@@ -4,6 +4,7 @@ import com.example.todo.dto.TaskCreateRequest;
 import com.example.todo.dto.TaskResponse;
 import com.example.todo.dto.TaskUpdateRequest;
 import com.example.todo.entity.Task;
+import com.example.todo.entity.TaskPriority;
 
 public class TaskMapper {
 
@@ -17,7 +18,7 @@ public class TaskMapper {
         response.setStatusLabel(task.getStatus().getLabel());
         response.setDueDate(task.getDueDate());
         response.setPriority(task.getPriority());
-        response.setPriorityLabel(task.getPriority().getLabel());
+        response.setPriorityLabel(task.getPriority() == null ? TaskPriority.MEDIUM.getLabel() : task.getPriority().getLabel());
         response.setSortOrder(task.getSortOrder());
         response.setCreatedAt(task.getCreatedAt());
         response.setUpdatedAt(task.getUpdatedAt());

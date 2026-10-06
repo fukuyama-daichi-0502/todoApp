@@ -8,7 +8,7 @@ export const useTaskEditPresenter = (id) => {
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("");
     const [dueDate, setDueDate] = useState("");
-    const [priority, setPriority] = useState("MEDIUM");
+    const [priority, setPriority] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [categories, setCategories] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -23,7 +23,7 @@ export const useTaskEditPresenter = (id) => {
                 setDescription(task.description ?? "");
                 setStatus(task.status);
                 setDueDate(task.dueDate ?? "");
-                setPriority(task.priority ?? "MEDIUM");
+                setPriority(task.priority ?? "");
                 setCategoryId(task.categoryId == null ? "" : String(task.categoryId))
 
                 const categoryData = await getCategories();
@@ -74,7 +74,7 @@ export const useTaskEditPresenter = (id) => {
             description,
             status,
             dueDate: dueDate === "" ? null : dueDate,
-            priority,
+            priority: priority === "" ? null : priority,
             categoryId: categoryId === "" ? null : Number(categoryId),
         };
         

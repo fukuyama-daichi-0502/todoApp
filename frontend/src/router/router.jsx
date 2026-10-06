@@ -5,7 +5,6 @@ import TaskCreatePage from "../views/TaskCreatePage";
 import TaskEditPage from "../views/TaskEditPage";
 import CategoryPage from "../views/CategoryPage";
 import CategoryCreatePage from "../views/CategoryCreatePage";
-import TaskDetailPage from "../views/TaskDetailPage";
 
 export const router = createBrowserRouter([
     {
@@ -27,9 +26,5 @@ export const router = createBrowserRouter([
     {
         path: "/categories/new",
         element: <CategoryCreatePage />
-    },
-    {
-        path: "/tasks/:id",
-        element: <TaskDetailPage />
     }
 ]);

@@ -15,6 +15,7 @@ function SortableTaskRow({
     isDescriptionExpanded,
     onDescriptionToggle
 }){
+
     const {
         ref,
         handleRef,
@@ -61,7 +62,7 @@ function SortableTaskRow({
     const getPriorityClassName = (priority) => {
         if (priority === "HIGH"){
             return "priority-high";
-        } else if(priority === "MEDIUM"){
+        } else if(priority === "MEDIUM" || priority === null){
             return "priority-medium";
         } else {
             return "priority-low";
@@ -84,11 +85,7 @@ function SortableTaskRow({
                     </button>
                 </td>
                 <td>{task.id}</td>
-                <td  className={getTitleClassName(task.status)}>
-                    <Link to = {`/tasks/${task.id}`}>
-                        {task.title}
-                    </Link>
-                </td>
+                <td  className={getTitleClassName(task.status)}>{task.title}</td>
                 <td>
                     <select className = {`status status-${task.status.toLowerCase()}`} value = {task.status} onChange = {(event) => onStatusChange(task.id, event.target.value)}>
                         <option value = "TODO">未着手</option>
@@ -227,7 +224,7 @@ function TodoList({
                 <>
                     <div calassName = "list-area">
                         <div className = "search">
-                            <input type = "text" value = {titleSearch} onChange = {handleTitleSearchChange} placeholder = "タイトル検索"/>
+                            <input type = "text" value = {titleSearch} onChange = {handleTitleSearchChange} placeholder = "検索"/>
                         </div>
 
                             <table className = "taskTable">

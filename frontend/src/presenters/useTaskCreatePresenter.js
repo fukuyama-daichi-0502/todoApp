@@ -7,7 +7,7 @@ export const useTaskCreatePresenter = () => {
 
     const [title, setTitle] = useState("");
     const [dueDate, setDueDate] = useState("");
-    const [priority, setPriority] = useState("MEDIUM");
+    const [priority, setPriority] = useState("");
     const [categoryId, setCategoryId] = useState("");
 
     const [categories, setCategories] = useState([]);
@@ -54,7 +54,7 @@ export const useTaskCreatePresenter = () => {
         const request = {
             title: title,
             dueDate: dueDate === "" ? null : dueDate,
-            priority: priority,
+            priority: priority === "" ? null : priority,
             categoryId: categoryId === "" ? null : Number(categoryId)
         };
 

@@ -68,6 +68,7 @@ function TaskForm({
                         <th>優先度</th>
                         <td>
                             <select value = {priority} onChange = {onPriorityChange}>
+                                <option value = "">未設定</option>
                                 <option value = "LOW">低</option>
                                 <option value = "MEDIUM">中</option>
                                 <option value = "HIGH">高</option>
