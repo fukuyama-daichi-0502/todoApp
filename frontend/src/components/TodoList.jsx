@@ -290,7 +290,7 @@ function TodoList({
             ): (
                 <div calassName = "list-area">
                     <div className = "search">
-                        <input type = "text" value = {titleSearch} onChange = {handleTitleSearchChange} placeholder = "タイトル検索"/>
+                        <input type = "text" value = {titleSearch} onChange = {handleTitleSearchChange} placeholder = "検索"/>
                     </div>
 
                     <DragDropProvider onDragEnd = {handleDragEnd}>
