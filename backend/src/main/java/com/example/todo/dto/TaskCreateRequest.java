@@ -2,8 +2,11 @@ package com.example.todo.dto;
 
 import java.time.LocalDate;
 
+import com.example.todo.entity.RecurrenceRule;
 import com.example.todo.entity.TaskPriority;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -14,6 +17,11 @@ public class TaskCreateRequest {
     private LocalDate dueDate;
     private TaskPriority priority;
     private Long categoryId;
+    private RecurrenceRule recurrenceRule = RecurrenceRule.NONE;
+    @Min(1)
+    @Max(31)
+    private Long recurrenceBaseDay;
+
 
     public TaskCreateRequest(){}
 
@@ -47,6 +55,22 @@ public class TaskCreateRequest {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public RecurrenceRule getRecurrenceRule() {
+        return recurrenceRule;
+    }
+
+    public void setRecurrenceRule(RecurrenceRule recurrenceRule) {
+        this.recurrenceRule = recurrenceRule;
+    }
+
+    public Long getRecurrenceBaseDay() {
+        return recurrenceBaseDay;
+    }
+
+    public void setRecurrenceBaseDay(Long recurrenceBaseDay) {
+        this.recurrenceBaseDay = recurrenceBaseDay;
     }
 
     

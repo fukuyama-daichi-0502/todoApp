@@ -38,3 +38,51 @@
     min-height: 120px;
     resize: none;
 }
+/* 基準日 */
+.recurrence-day-picker {
+    position: relative;
+}
+
+.recurrence-day-picker-button {
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.recurrence-day-panel {
+    position: absolute;
+
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+
+    padding: 8px;
+
+    background: white;
+    border: 1px solid;
+
+    z-index: 10;
+}
+
+.recurrence-day {
+    width: 36px;
+    height: 32px;
+
+    cursor: pointer;
+}
+
+.recurrence-day.selected {
+    font-weight: bold;
+    border: 2px solid;
+}
+
+.recurrence-end-of-month {
+    grid-column: 1 / -1;
+    height: 32px;
+    cursor: pointer;
+}
+
+.recurrence-end-of-month.selected {
+    font-weight: bold;
+    border: 2px solid;
+}

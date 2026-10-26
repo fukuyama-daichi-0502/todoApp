@@ -23,6 +23,7 @@ import com.example.todo.dto.TaskResponse;
 import com.example.todo.dto.TaskSearchCondition;
 import com.example.todo.dto.TaskUpdateRequest;
 import com.example.todo.entity.Category;
+import com.example.todo.entity.RecurrenceRule;
 import com.example.todo.entity.Task;
 import com.example.todo.entity.TaskPriority;
 import com.example.todo.entity.TaskStatus;
@@ -278,17 +279,6 @@ class TaskServiceTest {
         assertEquals(description, updatedTask.getDescription());
     }
 
-    //テストデータ作成用メソッド
-    private Task createTestTask(String title, int sortOrder){
-            Task task = new Task();
-            task.setTitle(title);
-            task.setStatus(TaskStatus.TODO);
-            task.setPriority(TaskPriority.MEDIUM);
-            task.setSortOrder(sortOrder);
-
-            return taskRepository.saveAndFlush(task);
-    }
-
     //フィルタリング・検索機能が正しく動作すること
     @Test
     void shouldSearchTasksByConditions(){
@@ -461,6 +451,90 @@ class TaskServiceTest {
             }
         );
 
+    }
+
+    //親タスク削除時にサブタスクも削除される
+    @Test 
+    void deleteTaskDeletesSubtasksWhenParentTaskIsDeleted(){
+        //準備：テストデータの作成
+        int startSortOrder = taskRepository.findTopByOrderBySortOrderDesc().map(task -> task.getSortOrder() + 1).orElse(1);
+        Task parentTask = createTestTask("親タスク", startSortOrder);
+        Task subtask1 = createTestSubtask("サブタスク1", startSortOrder + 1, parentTask);
+        Task subtask2 = createTestSubtask("サブタスク2", startSortOrder + 2, parentTask);
+
+        Long parentTaskId = parentTask.getId();
+        Long subtask1Id = subtask1.getId();
+        Long subtask2Id = subtask2.getId();
+
+        //実行前確認：DBにそれぞれのタスクが保存されていることの確認
+        assertTrue(taskRepository.existsById(parentTaskId));
+        assertTrue(taskRepository.existsById(subtask1Id));
+        assertTrue(taskRepository.existsById(subtask2Id));
+
+        //実行：親タスクの削除
+        taskService.deleteTask(parentTaskId);
+        taskRepository.flush();
+
+        //確認：期待した結果になっているか
+        assertFalse(taskRepository.existsById(parentTaskId));
+        assertFalse(taskRepository.existsById(subtask1Id));
+        assertFalse(taskRepository.existsById(subtask2Id));
+    }
+
+    //繰り返しタスクの元タスクの削除時にすでに生成済みの次回タスクが残る
+    @Test 
+    void deleteTaskDoesNotDeleteGeneratedNextTask(){
+        //準備：テストデータの作成
+        int startSortOrder = taskRepository.findTopByOrderBySortOrderDesc()
+            .map(task -> task.getSortOrder() + 1)
+            .orElse(1);
+        
+        Task originalTask = createTestTask("繰り返し元タスク", startSortOrder);
+        Task nextTask = createTestTask("生成済み次回タスク", startSortOrder + 1);
+
+        originalTask.setRecurrenceRule(RecurrenceRule.DAILY);
+        nextTask.setRecurrenceRule(RecurrenceRule.DAILY);
+
+        originalTask.setNextTask(nextTask);
+
+        originalTask = taskRepository.saveAndFlush(originalTask);
+
+        Long originalTaskId = originalTask.getId();
+        Long nextTaskId = nextTask.getId();
+
+        assertTrue(taskRepository.existsById(originalTaskId));
+        assertTrue(taskRepository.existsById(nextTaskId));
+
+        //実行：元タスクの削除
+        taskService.deleteTask(originalTaskId);
+        taskRepository.flush();
+
+        //確認：期待した結果になっているか
+        assertFalse(taskRepository.existsById(originalTaskId));
+        assertTrue(taskRepository.existsById(nextTaskId));
+    }
+
+    //テストデータ作成用メソッド
+    private Task createTestTask(String title, int sortOrder){
+            Task task = new Task();
+            task.setTitle(title);
+            task.setStatus(TaskStatus.TODO);
+            task.setPriority(TaskPriority.MEDIUM);
+            task.setSortOrder(sortOrder);
+
+            return taskRepository.saveAndFlush(task);
+    }
+
+    //テストデータ作成用メソッド（サブタスク）
+    private Task createTestSubtask(String title, int sortOrder, Task parentTask){
+        Task task = new Task();
+        task.setTitle(title);
+        task.setStatus(TaskStatus.TODO);
+        task.setPriority(TaskPriority.MEDIUM);
+        task.setSortOrder(sortOrder);
+        task.setParentTask(parentTask);
+
+        return taskRepository.saveAndFlush(task);
     }
 
 }					

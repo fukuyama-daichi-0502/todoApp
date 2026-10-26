@@ -16,6 +16,9 @@ function TaskEditPage() {
         priority,
         categoryId,
         categories,
+        recurrenceRule,
+        recurrenceBaseDay,
+        isSubtask,
         errorMessage,
         isLoading,
         handleTitleChange,
@@ -24,7 +27,9 @@ function TaskEditPage() {
         handleDueDateChange,
         handlePriorityChange,
         handleCategoryChange,
-        handleUpdateTask
+        handleUpdateTask,
+        handleRecurrenceRuleChange,
+        handleRecurrenceBaseDayChange
     } = useTaskEditPresenter(id);
 
     const handleSubmit = async (event) => {
@@ -57,6 +62,9 @@ function TaskEditPage() {
                 priority={priority}
                 categoryId={categoryId}
                 categories={categories}
+                recurrenceRule={recurrenceRule}
+                recurrenceBaseDay={recurrenceBaseDay}
+                isSubtask={isSubtask}
                 errorMessage={errorMessage}
                 onTitleChange={handleTitleChange}
                 onDescriptionChange={handleDescription}
@@ -64,6 +72,8 @@ function TaskEditPage() {
                 onDueDateChange={handleDueDateChange}
                 onPriorityChange={handlePriorityChange}
                 onCategoryChange={handleCategoryChange}
+                onRecurrenceRuleChange={handleRecurrenceRuleChange}
+                onRecurrenceBaseDayChange={handleRecurrenceBaseDayChange}
                 onSubmit={handleSubmit}
                 onCancel={handleCancel}
             />

@@ -9,8 +9,9 @@ export const useTaskCreatePresenter = () => {
     const [dueDate, setDueDate] = useState("");
     const [priority, setPriority] = useState("");
     const [categoryId, setCategoryId] = useState("");
-
     const [categories, setCategories] = useState([]);
+    const [recurrenceRule, setRecurrenceRule] = useState("NONE");
+    const [recurrenceBaseDay, setRecurrenceBaseDay] = useState("");
 
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -45,6 +46,19 @@ export const useTaskCreatePresenter = () => {
         setCategoryId(event.target.value);
     }
 
+    const handleRecurrenceRuleChange = (event) => {
+        const value = event.target.value;
+        setRecurrenceRule(value);
+
+        if(value !== "MONTHLY"){
+            setRecurrenceBaseDay("");
+        }
+    };
+
+    const handleRecurrenceBaseDayChange = (day) => {
+        setRecurrenceBaseDay(day);
+    };
+
     const handleCreateTask = async (event) => {
 
         event.preventDefault();
@@ -55,7 +69,9 @@ export const useTaskCreatePresenter = () => {
             title: title,
             dueDate: dueDate === "" ? null : dueDate,
             priority: priority === "" ? null : priority,
-            categoryId: categoryId === "" ? null : Number(categoryId)
+            categoryId: categoryId === "" ? null : Number(categoryId),
+            recurrenceRule: recurrenceRule,
+            recurrenceBaseDay: recurrenceRule === "MONTHLY" && recurrenceBaseDay !== "" ? Number(recurrenceBaseDay) : null
         };
 
         try {
@@ -80,12 +96,16 @@ export const useTaskCreatePresenter = () => {
         priority,
         categoryId,
         categories,
+        recurrenceRule,
+        recurrenceBaseDay,
         errorMessage,
 
         handleTitleChange,
         handleDueDateChange,
         handlePriorityChange,
         handleCategoryChange,
+        handleRecurrenceRuleChange,
+        handleRecurrenceBaseDayChange,
         handleCreateTask
     };
 };

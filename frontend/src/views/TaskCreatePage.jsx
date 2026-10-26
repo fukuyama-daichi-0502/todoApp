@@ -13,12 +13,16 @@ function TaskCreatePage() {
         priority,
         categoryId,
         categories,
+        recurrenceRule,
+        recurrenceBaseDay,
         errorMessage,
         handleTitleChange,
         handleDescription,
         handleDueDateChange,
         handlePriorityChange,
         handleCategoryChange,
+        handleRecurrenceRuleChange,
+        handleRecurrenceBaseDayChange,
         handleCreateTask
     } = useTaskCreatePresenter();
 
@@ -29,6 +33,10 @@ function TaskCreatePage() {
             navigate("/");
         }
     }
+    
+    const handleCancel = () => {
+        navigate("/");
+    };
 
     return (
         <div>
@@ -42,13 +50,18 @@ function TaskCreatePage() {
                 priority={priority}
                 categoryId={categoryId}
                 categories={categories}
+                recurrenceRule={recurrenceRule}
+                recurrenceBaseDay={recurrenceBaseDay}
                 errorMessage={errorMessage}
                 onTitleChange={handleTitleChange}
                 onDescriptionChange={handleDescription}
                 onDueDateChange={handleDueDateChange}
                 onPriorityChange={handlePriorityChange}
                 onCategoryChange={handleCategoryChange}
+                onRecurrenceRuleChange={handleRecurrenceRuleChange}
+                onRecurrenceBaseDayChange={handleRecurrenceBaseDayChange}
                 onSubmit={handleSubmit}
+                onCancel={handleCancel}
             />
 
             <Link to="/">

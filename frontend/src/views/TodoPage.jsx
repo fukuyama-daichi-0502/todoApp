@@ -8,7 +8,8 @@ function TodoPage() {
     const {
         tasks,
         categories,
-        // categoryOptions,
+        expandedParentId,
+        subtasksByParent,
         today,
         titleSearch,
         statusFilter,
@@ -25,19 +26,20 @@ function TodoPage() {
         handleDueDateFilterChange,
         handlePriorityFilterChange,
         handleCategoryFilterChange,
-        handleTaskReorder
+        handleTaskReorder,
+        handleSubtasksToggle
     } = useTaskListPresenter();
 
     let taskListContent;
 
-    const handleDelete = async(id) => {
+    const handleDelete = async(id, parentTaskId) => {
         const confirmad = window.confirm("このタスクを削除しますか？");
 
         if(!confirmad){
             return;
         }
 
-        await handleDeleteTask(id);
+        await handleDeleteTask(id, parentTaskId);
     };
     
     if (isLoading) {
@@ -55,6 +57,8 @@ function TodoPage() {
                 priorityFilter={priorityFilter}
                 categoryFilter={categoryFilter}
                 categories={categories}
+                expandedParentId = {expandedParentId}
+                subtasksByParent = {subtasksByParent}
                 isReorderDisabled={isReorderDisabled}
                 handleTitleSearchChange={handleTitleSearchChange}
                 handleStatusFilterChange={handleStatusFilterChange}
@@ -64,6 +68,7 @@ function TodoPage() {
                 onTaskReorder={handleTaskReorder}
                 onDelete = {handleDelete}
                 onStatusChange = {handleStatusChange}
+                onSubtasksToggle = {handleSubtasksToggle}
             />;
     }
 
