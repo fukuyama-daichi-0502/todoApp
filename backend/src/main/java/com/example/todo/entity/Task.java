@@ -7,9 +7,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,7 +47,22 @@ public class Task {
 
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_task_id")
+    private Task parentTask;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recurrence_rule", nullable = false)
+    private RecurrenceRule recurrenceRule = RecurrenceRule.NONE;
+
+    @Column(name = "recurrence_base_day")
+    private Long recurrenceBaseDay;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "next_task_id", unique = true)
+    private Task nextTask;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
     
@@ -84,6 +101,10 @@ public class Task {
         return status;
     } 
 
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
     public LocalDate getDueDate() {
         return dueDate;
     }
@@ -116,12 +137,40 @@ public class Task {
         this.sortOrder = sortOrder;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public Task getParentTask() {
+        return parentTask;
+    }
+
+    public void setParentTask(Task parentTask) {
+        this.parentTask = parentTask;
+    }
+
+    public RecurrenceRule getRecurrenceRule() {
+        return recurrenceRule;
+    }
+
+    public void setRecurrenceRule(RecurrenceRule recurrenceRule) {
+        this.recurrenceRule = recurrenceRule;
+    }
+
+    public Long getRecurrenceBaseDay() {
+        return recurrenceBaseDay;
+    }
+
+    public void setRecurrenceBaseDay(Long recurrenceBaseDay) {
+        this.recurrenceBaseDay = recurrenceBaseDay;
+    }
+
+    public Task getNextTask() {
+        return nextTask;
+    }
+
+    public void setNextTask(Task nextTask) {
+        this.nextTask = nextTask;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {

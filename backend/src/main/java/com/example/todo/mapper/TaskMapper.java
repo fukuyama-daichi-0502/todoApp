@@ -20,6 +20,10 @@ public class TaskMapper {
         response.setPriority(task.getPriority());
         response.setPriorityLabel(task.getPriority() == null ? TaskPriority.MEDIUM.getLabel() : task.getPriority().getLabel());
         response.setSortOrder(task.getSortOrder());
+        response.setParentTaskId(task.getParentTask() == null ? null: task.getParentTask().getId());
+        response.setRecurrenceRule(task.getRecurrenceRule());
+        response.setRecurrenceBaseDay(task.getRecurrenceBaseDay());
+        response.setNextTaskId(task.getNextTask() == null ? null: task.getNextTask().getId());
         response.setCreatedAt(task.getCreatedAt());
         response.setUpdatedAt(task.getUpdatedAt());
         response.setCompletedAt(task.getCompletedAt());

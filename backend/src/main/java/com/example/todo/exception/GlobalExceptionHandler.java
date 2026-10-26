@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.todo.dto.ApiErrorResponse;
-import com.example.todo.exception.DuplicateResourceException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,6 +25,14 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(HttpStatus.BAD_REQUEST.value(),message);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    //複数項目の組み合わせによるValidationエラー
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidRequestException(InvalidRequestException exception){
+        ApiErrorResponse errorResponse = new ApiErrorResponse(exception.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     //カテゴリ名重複エラー

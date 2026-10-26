@@ -5,6 +5,10 @@ public class ApiErrorResponse {
 
     private String message;
 
+    public ApiErrorResponse(String message){
+        this.message = message;
+    }
+
     public ApiErrorResponse(int status, String message){
         this.status = status;
         this.message = message;

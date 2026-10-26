@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.todo.dto.SubtaskCreateRequest;
 import com.example.todo.dto.TaskCreateRequest;
 import com.example.todo.dto.TaskReorderRequest;
 import com.example.todo.dto.TaskResponse;
@@ -42,13 +43,30 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getTasks(@ModelAttribute TaskSearchCondition condition){
-        return taskService.searchTasks(condition);
+    public ResponseEntity<List<TaskResponse>> getTasks(@ModelAttribute TaskSearchCondition condition){
+        List<TaskResponse> tasks = taskService.searchTasks(condition);
+
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/{parentId}/subtasks")
+    public ResponseEntity<List<TaskResponse>> getSubtasks(@PathVariable Long parentId){
+        List<TaskResponse> subtasks = taskService.getSubtasks(parentId);
+
+        return ResponseEntity.ok(subtasks);
     }
     
     @PostMapping
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskCreateRequest request) {
         TaskResponse response = taskService.createTask(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    //サブタスクの作成
+    @PostMapping("/{parentId}/subtasks")
+    public ResponseEntity<TaskResponse> createSubtask(@PathVariable Long parentId, @Valid @RequestBody SubtaskCreateRequest request){
+        TaskResponse response = taskService.createSubtask(parentId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -93,5 +111,7 @@ public class TaskController {
 
         return ResponseEntity.ok(response);
     }
+
+    
 
 }

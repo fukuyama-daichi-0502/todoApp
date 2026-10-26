@@ -294,3 +294,15 @@
 .description-toggle-button {
     flex-shrink: 0;
 }
+
+.subtask-title-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.subtask-description-area {
+    margin-top: 8px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}

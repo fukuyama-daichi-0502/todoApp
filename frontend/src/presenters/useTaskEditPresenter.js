@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTask, updateTask } from "../models/taskApi";
+import { getTask, getSubtasks, updateTask } from "../models/taskApi";
 import { getCategories } from "../models/categoryApi";
 import { getApiErrorMessage } from "../errors/apiError";
 
@@ -11,8 +11,13 @@ export const useTaskEditPresenter = (id) => {
     const [priority, setPriority] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [categories, setCategories] = useState([]);
+    const [recurrenceRule, setRecurrenceRule] = useState("NONE");
+    const [recurrenceBaseDay, setRecurrenceBaseDay] = useState("");
+    const [isSubtask, setIsSubtask] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+    const [originalStatus, setOriginalStatus] = useState("");
+    const [hasSubtasks, setHasSubtasks] = useState(false);
     
     useEffect(() => {
         const fetchTask = async() =>{
@@ -22,9 +27,22 @@ export const useTaskEditPresenter = (id) => {
                 setTitle(task.title);
                 setDescription(task.description ?? "");
                 setStatus(task.status);
+                setOriginalStatus(task.status);
                 setDueDate(task.dueDate ?? "");
                 setPriority(task.priority ?? "");
-                setCategoryId(task.categoryId == null ? "" : String(task.categoryId))
+                setCategoryId(task.categoryId == null ? "" : String(task.categoryId));
+                setRecurrenceRule(task.recurrenceRule ?? "NONE");
+                setRecurrenceBaseDay(task.recurrenceBaseDay ?? "");
+
+                const subtask = task.parentTaskId !== null;
+                setIsSubtask(task.parentTaskId !== null);
+
+                if(!subtask){
+                    const subtasks = await getSubtasks(id);
+                    setHasSubtasks(subtasks.length > 0);
+                }else{
+                    setHasSubtasks(false);
+                }
 
                 const categoryData = await getCategories();
                 setCategories(categoryData);
@@ -65,9 +83,32 @@ export const useTaskEditPresenter = (id) => {
         setCategoryId(event.target.value);
     };
 
+    const handleRecurrenceRuleChange = (event) => {
+        const value = event.target.value;
+        setRecurrenceRule(value);
+
+        if(value !== "MONTHLY"){
+            setRecurrenceBaseDay("");
+        }
+    };
+
+    const handleRecurrenceBaseDayChange = (day) => {
+        setRecurrenceBaseDay(day);
+    };
+
     const handleUpdateTask = async (event) => {
         event.preventDefault();
         setErrorMessage("");
+
+        const changedToDone = originalStatus !== "DONE" && status === "DONE";
+
+        if(!isSubtask && hasSubtasks && changedToDone){
+            const confirmed = window.confirm("このタスクを完了にすると、すべてのサブタスクも完了になります\n完了に変更しますか？")
+        
+            if(!confirmed){
+                return null;
+            }
+        }
 
         const request = {
             title,
@@ -76,6 +117,8 @@ export const useTaskEditPresenter = (id) => {
             dueDate: dueDate === "" ? null : dueDate,
             priority: priority === "" ? null : priority,
             categoryId: categoryId === "" ? null : Number(categoryId),
+            recurrenceRule: isSubtask ? "NONE" : recurrenceRule,
+            recurrenceBaseDay: !isSubtask && recurrenceRule === "MONTHLY" && recurrenceBaseDay !== "" ? Number(recurrenceBaseDay) : null,
         };
         
         try{
@@ -98,6 +141,9 @@ export const useTaskEditPresenter = (id) => {
         priority,
         categoryId,
         categories,
+        recurrenceRule,
+        recurrenceBaseDay,
+        isSubtask,
         errorMessage,
         isLoading,
         handleTitleChange,
@@ -106,6 +152,8 @@ export const useTaskEditPresenter = (id) => {
         handleDueDateChange,
         handlePriorityChange,
         handleCategoryChange,
-        handleUpdateTask
+        handleUpdateTask,
+        handleRecurrenceRuleChange,
+        handleRecurrenceBaseDayChange
     };
 }

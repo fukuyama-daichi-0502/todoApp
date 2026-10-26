@@ -37,6 +37,12 @@ export const createTask = async (request) => {
     return response.data;
 };
 
+export const createSubtask = async (parentId, subtask) => {
+    const response = await axios.post(`${Base_URL}/${parentId}/subtasks`,subtask);
+
+    return response.data;
+}
+
 export const updateTask = async(id, request) => {
     
     const response = await axios.put(`${Base_URL}/${id}`,request);
@@ -74,3 +80,9 @@ export const deleteTask = async(id) => {
 export const reorderTask = async (request) => {
     await axios.patch(`${Base_URL}/reorder`, request);
 };
+
+export const getSubtasks = async (parentId) => {
+    const response = await axios.get(`${Base_URL}/${parentId}/subtasks`)
+
+    return response.data;
+}

@@ -3,6 +3,7 @@ package com.example.todo.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.example.todo.entity.RecurrenceRule;
 import com.example.todo.entity.TaskPriority;
 import com.example.todo.entity.TaskStatus;
 
@@ -32,11 +33,21 @@ public class TaskResponse {
 
     private Integer sortOrder;
 
+    private Long parentTaskId;
+
+    private RecurrenceRule recurrenceRule;
+
+    private Long recurrenceBaseDay;
+
+    private Long nextTaskId;
+
     private LocalDateTime createdAt;
     
     private LocalDateTime updatedAt;
     
     private LocalDateTime completedAt;
+
+    private Integer progress;
 
     public Long getId() {
         return id;
@@ -134,6 +145,38 @@ public class TaskResponse {
         this.sortOrder = sortOrder;
     }
 
+    public Long getParentTaskId() {
+        return parentTaskId;
+    }
+
+    public void setParentTaskId(Long parentTaskId) {
+        this.parentTaskId = parentTaskId;
+    }
+
+    public RecurrenceRule getRecurrenceRule() {
+        return recurrenceRule;
+    }
+
+    public void setRecurrenceRule(RecurrenceRule recurrenceRule) {
+        this.recurrenceRule = recurrenceRule;
+    }
+
+    public Long getRecurrenceBaseDay() {
+        return recurrenceBaseDay;
+    }
+
+    public void setRecurrenceBaseDay(Long recurrenceBaseDay) {
+        this.recurrenceBaseDay = recurrenceBaseDay;
+    }
+
+    public Long getNextTaskId() {
+        return nextTaskId;
+    }
+
+    public void setNextTaskId(Long nextTaskId) {
+        this.nextTaskId = nextTaskId;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -156,6 +199,14 @@ public class TaskResponse {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public Integer getProgress() {
+        return progress;
+    }
+
+    public void setProgress(Integer progress) {
+        this.progress = progress;
     }
     
 }
